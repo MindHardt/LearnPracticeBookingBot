@@ -1,16 +1,34 @@
-# This is a sample Python script.
+import telebot
+from telebot import types
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+with open('token.txt') as file:
+    token = file.readline()
 
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+bot = telebot.TeleBot(token)
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+@bot.message_handler(commands=['start'])
+def start_message(message):
+    bot.send_message(message.chat.id, 'Привет')
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
+@bot.message_handler(commands=['button'])
+def button_message(message):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    item1 = types.KeyboardButton("Кнопка")
+    markup.add(item1)
+    bot.send_message(message.chat.id, 'Выберите что вам надо', reply_markup=markup)
+
+
+@bot.message_handler(content_types='text')
+def message_reply(message):
+    if message.text == "Кнопка":
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1 = types.KeyboardButton("Кнопка 2")
+        markup.add(item1)
+        bot.send_message(message.chat.id, 'Выберите что вам надо', reply_markup=markup)
+    elif message.text == "Кнопка 2":
+        bot.send_message(message.chat.id, 'Спасибо за прочтение статьи!')
+
+
+bot.infinity_polling()
