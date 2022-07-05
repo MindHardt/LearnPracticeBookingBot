@@ -1,4 +1,4 @@
-
+import sqlite3
 
 def add_admin(user_id):
     # TODO: THIS
