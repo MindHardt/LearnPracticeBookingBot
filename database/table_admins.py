@@ -14,13 +14,13 @@ def revoke_admin(user_id):
     return
 
 
-def is_admin(user_id) -> bool:
-    admin_id = [x[0] for x in cursor.execute("select id_admin from admins").fetchall()]
-    if user_id is not admin_id:
-        print('уже есть')
-        pass
+def is_admin(user_id) -> bool:  
+    admin_id = [x[0] for x in cursor.execute(f"select id_admin from admins where id_admin = {user_id}").fetchall()]
+    if len(admin_id) != 0:
+        print('есть')
     else:
-        print('нету')
+        print('Нет')
+
 
 def create_table():
     cursor.execute("CREATE TABLE IF NOT EXISTS admins(id_admin INTEGER, comment TEXT)")
