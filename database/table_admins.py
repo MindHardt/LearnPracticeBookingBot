@@ -1,21 +1,34 @@
 import sqlite3
+connection = sqlite3.connect('h.db')
+cursor = connection.cursor()
 
 def add_admin(user_id):
-    # TODO: THIS
+    cursor.execute("insert into admins(id_admin) values(?)", user_id)
+    connection.commit()    
     return
 
 
 def revoke_admin(user_id):
-    # TODO: THIS
+    cursor.execute(f"delete from admins where id_admin = {user_id}")
+    connection.commit() 
     return
 
 
 def is_admin(user_id) -> bool:
-    # TODO: THIS
-    return False
+    admin_id = [x[0] for x in cursor.execute("select id_admin from admins").fetchall()]
+    if user_id is not admin_id:
+        print('уже есть')
+        pass
+    else:
+        print('нету')
 
-
-# This is not supposed to be used in code more than once
 def create_table():
-    # TODO: THIS
+    cursor.execute("CREATE TABLE IF NOT EXISTS admins(id_admin INTEGER, comment TEXT)")
+    connection.commit() 
     return
+
+user_id = '6'
+create_table()
+add_admin(user_id)
+revoke_admin(user_id)
+is_admin(user_id)
