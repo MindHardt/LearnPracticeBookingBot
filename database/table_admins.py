@@ -2,14 +2,20 @@
 
 def add_admin(user_id):
     # TODO: THIS
-    return 0
+    return
 
 
 def revoke_admin(user_id):
     # TODO: THIS
-    return 0
+    return
 
 
 def is_admin(user_id) -> bool:
     # TODO: THIS
-    return 0
+    return False
+
+
+# This is not supposed to be used in code more than once
+def create_table():
+    # TODO: THIS
+    return
