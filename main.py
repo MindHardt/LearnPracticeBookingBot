@@ -1,17 +1,16 @@
-import telebot
 from PIL.Image import Image
 from geopy.geocoders import Nominatim
 from staticmap import StaticMap, CircleMarker
 from telebot import types
 
+import filter_menu
+import telebot
+
 with open('token.txt') as file:
     token = file.readline()
 
 bot = telebot.TeleBot(token)
-
-
-starred = []
-user_data = dict()
+filter_menu.bot = bot
 
 
 @bot.message_handler(commands=['start'])
@@ -27,19 +26,18 @@ def button_message(message):
     map_pointer_button = types.KeyboardButton('Точка на карте')
     markup.add(map_pointer_button)
 
-    clear_filters_button = types.KeyboardButton('Очистить фильтры')
-    markup.add(clear_filters_button)
-
-    add_filter_button = types.KeyboardButton('Добавить фильтр')
+    add_filter_button = types.KeyboardButton('Настроить фильтры')
     markup.add(add_filter_button)
-
-    list_filters_button = types.KeyboardButton('Список фильтров')
-    markup.add(list_filters_button)
 
     add_star_button = types.KeyboardButton('Сохранить в избранное')
     markup.add(add_star_button)
 
     bot.send_message(message.chat.id, 'Выберите что вам надо', reply_markup=markup)
+
+
+@bot.message_handler(commands=['filters'])
+def goto_filters(message):
+    bot.send_message(message.chat.id, 'Настраиваем фильтры. Чтобы вернуться в меню можете использовать /filters', reply_markup=filter_menu.get_markup())
 
 
 @bot.message_handler(content_types='text')
@@ -48,21 +46,14 @@ def message_noncommand_handle(message):
         bot.send_message(message.chat.id, 'Введите координаты или адрес')
         bot.register_next_step_handler(message, handle_coordinates)
 
-    elif message.text == 'Добавить фильтр':
-        bot.send_message(message.chat.id, 'Введите фильтр')
-        bot.register_next_step_handler(message, add_filter)
+    elif message.text == 'Настроить фильтры':
+        goto_filters(message)
 
-    elif message.text == 'Список фильтров':
-        filters = user_data.get(message.chat.id)
-        bot.send_message(message.chat.id, f'Список фильтров:\n{filters}')
+    elif message.text in filter_menu.filter_triggers:
+        filter_menu.message_filters_handle(message)
 
-    elif message.text == 'Очистить фильтры':
-        user_data.pop(message.chat.id)
-        bot.send_message(message.chat.id, 'Очистил список фильтров')
-
-    elif message.text == 'Сохранить в избранное':
-        bot.send_message(message.chat.id, 'Введите url')
-        bot.register_next_step_handler(message, add_filter)
+    elif message.text == 'Назад':
+        button_message(message)
 
 
 def handle_coordinates(message):
@@ -74,35 +65,21 @@ def handle_coordinates(message):
         lon = location.longitude
         lat = location.latitude
 
-        response = f"{location.address}\n\n{lat}, {lon}"
-        bot.send_message(message.chat.id, response)
-
-        maps_link = f"https://yandex.ru/maps/?ll={lon}%2C{lat}&mode=whatshere&whatshere%5Bpoint%5D={lon}%2C{lat}&whatshere%5Bzoom%5D=18.75&z=20"
+        maps_link = f"https://yandex.ru/maps/?ll={lon}%2C{lat}&mode=whatshere&whatshere%5Bpoint%5D={lon}%2C{lat}&whatshere%5Bzoom%5D=18.75&z=10"
         markup = types.InlineKeyboardMarkup()
         button1 = types.InlineKeyboardButton("Ссылка на яндекс-карты", url=maps_link)
         markup.add(button1)
 
-        img = create_map(location.latitude, location.longitude)
-        bot.send_chat_action(message.chat.id, 'upload_photo')
-        bot.send_photo(message.chat.id, img, reply_to_message_id=message.id, reply_markup=markup)
-
+        response = f"{location.address}\n\n{lat}, {lon}"
+        bot.send_message(message.chat.id, response, reply_markup=markup)
+        try:
+            img = create_map(location.latitude, location.longitude)
+            bot.send_chat_action(message.chat.id, 'upload_photo')
+            bot.send_photo(message.chat.id, img, reply_to_message_id=message.id)
+        except Exception as e:
+            bot.send_message(message.chat.id, f"Произошла ошибка при отправке карты: `{e}`")
     except Exception as e:
-        print(e)
-        bot.send_message(message.chat.id, "Что-то пошло не так!!!")
-
-
-def add_filter(message):
-    if user_data.get(message.chat.id) is None:
-        user_data[message.chat.id] = []
-
-    user_data[message.chat.id].append(message.text)
-
-    bot.send_message(message.chat.id, f'Добавил `{message.text}` в список фильтров')
-
-
-def add_star(message):
-    starred.append(message.text)
-    bot.send_message(message.chat.id, f'Добавил {message.text} в избранное!')
+        bot.send_message(message.chat.id, f"Произошла ошибка: `{e}`")
 
 
 def create_map(lat, long) -> Image:
