@@ -16,13 +16,12 @@ import json
 #20 records_per_page
 #lenta
 
-headers2 = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.115 Safari/537.36'}
-headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9'}
-
 class Parser:
     base_url: str
     max_records: int
     records_per_page: int
+    headers2 = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.115 Safari/537.36'}
+    headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9'}
 
     def parse(dest: str, checkin: date, checkout: date, hotels_quantity: int):
         pass
@@ -62,7 +61,7 @@ class BookingParser(Parser):
             #изменяю url на другую страницу
             url_to_parse = re.sub('offset=\d+', 'offset=' + i.__str__(), url_to_parse)
             #soup страницы с отелями
-            soup = BeautifulSoup(requests.get(url_to_parse,headers=headers).content, 'html.parser')
+            soup = BeautifulSoup(requests.get(url_to_parse,headers=self.headers).content, 'html.parser')
 
             for item in soup.find_all('div', 'd20f4628d0'): #going through hotel records/переход по блокам отелей
                 #extract url
@@ -80,7 +79,7 @@ class BookingParser(Parser):
 
     #извлекает данные об отеле по ссылке
     def __get_hotel_data(self, url):   #booking
-        hotel_soup = BeautifulSoup(requests.get(url,headers=headers).content, 'html.parser')
+        hotel_soup = BeautifulSoup(requests.get(url,headers=self.headers).content, 'html.parser')
         #name //*[@id="hp_hotel_name"]/text() 
         try:
             name = hotel_soup.find('h2', id='hp_hotel_name').get_text().replace('\n', '').removeprefix('Отель')
@@ -152,6 +151,7 @@ class YandexParser(Parser):
     records_per_page = 25
 
 """
+
 Parsers = [BookingParser(), YandexParser()]
 
 city = "Стабмбул"
@@ -160,6 +160,7 @@ checkout = date(2022, 9, 11)
 
 hotels_data = Parsers[0].parse(city, checkin, checkout, 50)
 
-with open("data\\temp.json", "w", encoding='utf-8') as final:
+with open("temp.json", "w", encoding='utf-8') as final:
     json.dump(hotels_data, final, ensure_ascii=False, indent=2)
+
 """
