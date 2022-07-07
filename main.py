@@ -1,10 +1,11 @@
-from PIL.Image import Image
+import telebot
 from geopy.geocoders import Nominatim
-from staticmap import StaticMap, CircleMarker
+from PIL.Image import Image
+from staticmap import CircleMarker, StaticMap
 from telebot import types
 
 import filter_menu
-import telebot
+import parser
 
 with open('token.txt') as file:
     token = file.readline()
@@ -29,8 +30,11 @@ def button_message(message):
     add_filter_button = types.KeyboardButton('Настроить фильтры')
     markup.add(add_filter_button)
 
-    add_star_button = types.KeyboardButton('Сохранить в избранное')
-    markup.add(add_star_button)
+    #add_star_button = types.KeyboardButton('Сохранить в избранное')
+    #markup.add(add_star_button)
+
+    add_hotel_search_button = types.KeyboardButton('Найти отель')
+    markup.add(add_hotel_search_button)
 
     bot.send_message(message.chat.id, 'Выберите что вам надо', reply_markup=markup)
 
@@ -46,6 +50,10 @@ def message_noncommand_handle(message):
         bot.send_message(message.chat.id, 'Введите координаты или адрес')
         bot.register_next_step_handler(message, handle_coordinates)
 
+    elif message.text == 'Найти отель':
+        bot.send_message(message.chat.id, 'Введите город,checkin,checkout (dd.mm.yyyy):')
+        bot.register_next_step_handler(message, handle_hotel_search)
+
     elif message.text == 'Настроить фильтры':
         goto_filters(message)
 
@@ -54,6 +62,8 @@ def message_noncommand_handle(message):
 
     elif message.text == 'Назад':
         button_message(message)
+    
+    
 
 
 def handle_coordinates(message):
@@ -87,6 +97,23 @@ def create_map(lat, long) -> Image:
     m.add_marker(CircleMarker((long, lat), "red", 5))
     return m.render()
 
+def handle_hotel_search(message):
+    try:
+        args = message.text.split(',')
+        city = args[0]
+        checkin = args[1]
+        checkout = args[2]
+        bparser = parser.BookingParser()
+        hotels_data = bparser.parse(city, checkin, checkout, 5)
+
+        response = ''
+        for s in hotels_data:
+            response += f"{s['name']} {s['rate']}\n"
+
+        bot.send_message(message.chat.id, response)
+    except Exception as e:
+        bot.send_message(message.chat.id, f"Произошла ошибка в вводе данных: `{e}`")
+    
 
 print('Started!')
 bot.infinity_polling()
