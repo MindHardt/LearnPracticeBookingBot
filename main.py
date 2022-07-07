@@ -1,4 +1,3 @@
-from menus import filter_menu
 import telebot
 from menus.filter_menu import FilterMenu
 from menus.main_menu import MainMenu
