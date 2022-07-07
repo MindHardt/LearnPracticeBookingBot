@@ -5,7 +5,7 @@ from staticmap import CircleMarker, StaticMap
 from telebot import types
 
 import filter_menu
-import parser
+import webparser
 
 with open('token.txt') as file:
     token = file.readline()
@@ -30,8 +30,8 @@ def button_message(message):
     add_filter_button = types.KeyboardButton('Настроить фильтры')
     markup.add(add_filter_button)
 
-    #add_star_button = types.KeyboardButton('Сохранить в избранное')
-    #markup.add(add_star_button)
+    add_star_button = types.KeyboardButton('Сохранить в избранное')
+    markup.add(add_star_button)
 
     add_hotel_search_button = types.KeyboardButton('Найти отель')
     markup.add(add_hotel_search_button)
@@ -103,7 +103,7 @@ def handle_hotel_search(message):
         city = args[0]
         checkin = args[1]
         checkout = args[2]
-        bparser = parser.BookingParser()
+        bparser = webparser.BookingParser()
         hotels_data = bparser.parse(city, checkin, checkout, 5)
 
         response = ''

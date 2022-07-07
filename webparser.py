@@ -1,4 +1,3 @@
-from ast import arg
 from datetime import date
 import time
 from urllib.parse import urlencode
@@ -25,10 +24,9 @@ class Parser:
     headers2 = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.115 Safari/537.36'}
     headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9'}
 
-    def parse(dest: str, checkin: date, checkout: date, hotels_quantity: int):
+    def parse():
         pass
 
-    
 
 class BookingParser(Parser): 
     base_url = 'https://www.booking.com/searchresults.ru.html'
@@ -141,20 +139,17 @@ class BookingParser(Parser):
             all_data.append(result)
         return all_data
 
-    def __str_to_date(s: str, separator = '.'):
-        args = str.split(separator)
+    def __str_to_date(self, str_date: str, separator = '.'):
+        args = str_date.split(separator)
         return date(int(args[2]), int(args[1]), int(args[0]))
-
-    def parse(self, dest: str, checkin: date, checkout: date, hotels_quantity: int):
-        hotel_search_url = self.__generate_url(dest, checkin, checkout)
-        hotel_urls = self.__get_hotel_urls(hotel_search_url, hotels_quantity)
-        all_data = self.__get_all_hotel_data(hotel_urls, 4)
-        return all_data
 
     def parse(self, dest: str, checkin: str, checkout: str, hotels_quantity: int):
         checkin_d = self.__str_to_date(checkin)
         checkout_d = self.__str_to_date(checkout)
-        return self.parse(dest, checkin_d, checkout_d, hotels_quantity)
+        hotel_search_url = self.__generate_url(dest, checkin_d, checkout_d)
+        hotel_urls = self.__get_hotel_urls(hotel_search_url, hotels_quantity)
+        all_data = self.__get_all_hotel_data(hotel_urls, 4)
+        return all_data
 
     #def __get_all_hotel_data_tgbot(self, urls, token: int, chat_id: int, thread_number = 4):
         pool = Pool(processes=thread_number)
@@ -175,12 +170,4 @@ class YandexParser(Parser):
     max_records = 50
     records_per_page = 25
 
-test_data = 'Париж,10.01.2023,11.01.2023'
 
-parser = BookingParser()
-
-args = test_data.split(',')
-city = args[0]
-checkin = args[1]
-checkout = args[2]
-hd = parser.parse(city, checkin, checkout, 5)
