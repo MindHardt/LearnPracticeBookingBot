@@ -2,13 +2,14 @@ import telebot
 from menus.filter_menu import FilterMenu
 from menus.main_menu import MainMenu
 from simple_commands.map_pointer_command import MapPointerCommand
+from simple_commands.hotel_search_command import HotelSearchCommand
 
 with open('token.txt') as file:
     token = file.readline()
 
 bot = telebot.TeleBot(token)
 menus = [FilterMenu(), MainMenu()]
-commands = [MapPointerCommand()]
+commands = [MapPointerCommand(), HotelSearchCommand()]
 trigger_callbacks = dict()
 
 for menu in menus:
