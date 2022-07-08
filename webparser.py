@@ -25,8 +25,7 @@ class Parser:
     headers2 = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.115 Safari/537.36'}
     headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9'}
 
-    @staticmethod
-    def parse():
+    def parse(self, dest: str, checkin: str, checkout: str, hotels_quantity: int, chat_id, token):
         pass
 
     
