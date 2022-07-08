@@ -8,7 +8,6 @@ def execute(message, bot):
     bot.send_message(message.chat.id, 'Введите координаты или адрес')
     bot.register_next_step_handler(message, lambda m: handle_coordinates(m, bot))
 
-
 def handle_coordinates(message, bot):
     coordinates = message.text
     locator = Nominatim(user_agent="IIT2022BookingBot")

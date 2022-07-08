@@ -1,6 +1,6 @@
 import telebot
 
-from commands import map_pointer_command, hotel_search_command
+from commands import map_pointer_command, hotel_search_command, redeem_promocode_command, create_promocode_command
 
 with open('token.txt') as file:
     token = file.readline()
@@ -22,9 +22,13 @@ def menu_message(message):
 def message_non_command_handle(message):
     call = message.text
     if call == "Точка на карте":
-        bot.register_next_step_handler(message, lambda m: map_pointer_command.execute(m, bot))
+        map_pointer_command.execute(message, bot)
     elif call == "Найти отель":
-        bot.register_next_step_handler(message, lambda m: hotel_search_command.execute(m, bot))
+        hotel_search_command.execute(message, bot)
+    elif call == "Использовать промокод":
+        redeem_promocode_command.execute(message, bot)
+    elif call == "Создать промокод":
+        create_promocode_command.execute(message, bot)
 
 
 print('Started!')
