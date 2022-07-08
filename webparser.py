@@ -25,6 +25,7 @@ class Parser:
     headers2 = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.115 Safari/537.36'}
     headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9'}
 
+    @staticmethod
     def parse():
         pass
 
@@ -63,7 +64,7 @@ class BookingParser(Parser):
             #изменяю url на другую страницу
             url_to_parse = re.sub('offset=\d+', 'offset=' + i.__str__(), url_to_parse)
             #soup страницы с отелями
-            soup = BeautifulSoup(requests.get(url_to_parse,headers=self.headers).content, 'html.parser')
+            soup = BeautifulSoup(requests.get(url_to_parse,headers=self.headers).content, 'html.controller')
 
             for item in soup.find_all('div', 'd20f4628d0'): #going through hotel records/переход по блокам отелей
                 #extract url
@@ -81,7 +82,7 @@ class BookingParser(Parser):
 
     #извлекает данные об отеле по ссылке
     def __get_hotel_data(self, url):   #booking
-        hotel_soup = BeautifulSoup(requests.get(url,headers=self.headers).content, 'html.parser')
+        hotel_soup = BeautifulSoup(requests.get(url,headers=self.headers).content, 'html.controller')
         #name //*[@id="hp_hotel_name"]/text() 
         try:
             name = hotel_soup.find('h2', id='hp_hotel_name').get_text().replace('\n', '').removeprefix('Отель')
@@ -133,7 +134,7 @@ class BookingParser(Parser):
         }
         return hotel_data
 
-    def __str_to_date(self, str_date: str, separator = '.'):
+    def __str_to_date(self, str_date: str, separator='.'):
         args = str_date.split(separator)
         return date(int(args[2]), int(args[1]), int(args[0]))
 

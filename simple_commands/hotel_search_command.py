@@ -1,33 +1,45 @@
-from telebot import types
+import datetime
+import uuid
 
 import webparser
-from simple_commands.abstract_simple_command import AbstractSimpleCommand
+from database.entity_request import EntityRequest
+from controller import authentificator, parser_controller
 
 
-class HotelSearchCommand(AbstractSimpleCommand):
+def execute(message, bot):
+    bot.send_message(message.chat.id, 'Введите город,checkin,checkout (dd.mm.yyyy):')
+    bot.register_next_step_handler(message, lambda m: handle_hotel_search(m, bot))
 
-    def get_name(self):
-        return 'Найти отель'
 
-    def execute(self, message, bot):
-        bot.send_message(message.chat.id, 'Введите город,checkin,checkout (dd.mm.yyyy):')
-        bot.register_next_step_handler(message, lambda m: self.handle_hotel_search(m, bot))
+def handle_hotel_search(message, bot):
+    try:
+        args = message.text.split(',')
+        city = args[0]
+        checkin = args[1]
+        checkout = args[2]
 
-    def handle_hotel_search(self, message, bot):
-        try:
-            args = message.text.split(',')
-            city = args[0]
-            checkin = args[1]
-            checkout = args[2]
-            bparser = webparser.BookingParser()
-            hotels_data = bparser.parse(city, checkin, checkout, 10, message.chat.id, bot.token)
+        if checkin is not datetime.date or checkout is not datetime.date or checkin >= checkout:
+            raise TypeError
 
-            response = ''
-            for s in hotels_data:
-                response += f"{s['name']} {s['rate']}\n"
+        request = EntityRequest
+        request.unique_id = uuid.uuid4()
+        request.date_request = datetime.datetime.now()
+        request.user_id = authentificator.get_user(message.chat.id)
+        request.date_arrive = checkin
+        request.date_depart = checkout
+        request.destination = city
 
-            bot.send_message(message.chat.id, response)
-        except Exception as e:
-            bot.send_message(message.chat.id, f"Произошла ошибка в вводе данных: `{e}`")
+        parser_controller.queue_parse(request, bot, message.chat.id)
+
+        # booking_parser = webparser.BookingParser()
+        # hotels_data = booking_parser.parse(city, checkin, checkout, 10, message.chat.id, bot.token)
+        #
+        # response = ''
+        # for s in hotels_data:
+        #     response += f"{s['name']} {s['rate']}\n"
+        #     bot.send_message(message.chat.id, response)
+
+    except Exception as e:
+        bot.send_message(message.chat.id, f"Произошла ошибка в вводе данных: `{e}`")
 
     
