@@ -1,6 +1,6 @@
 import telebot
 
-from simple_commands import map_pointer_command, hotel_search_command
+from commands import map_pointer_command, hotel_search_command
 
 with open('token.txt') as file:
     token = file.readline()
