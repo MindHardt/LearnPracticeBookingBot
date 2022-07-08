@@ -20,15 +20,18 @@ def menu_message(message):
 
 @bot.message_handler(content_types='text')
 def message_non_command_handle(message):
-    call = message.text
-    if call == "Точка на карте":
-        map_pointer_command.execute(message, bot)
-    elif call == "Найти отель":
-        hotel_search_command.execute(message, bot)
-    elif call == "Использовать промокод":
-        redeem_promocode_command.execute(message, bot)
-    elif call == "Создать промокод":
-        create_promocode_command.execute(message, bot)
+    try:
+        call = message.text
+        if call == "Точка на карте":
+            map_pointer_command.execute(message, bot)
+        elif call == "Найти отель":
+            hotel_search_command.execute(message, bot)
+        elif call == "Использовать промокод":
+            redeem_promocode_command.execute(message, bot)
+        elif call == "Создать промокод":
+            create_promocode_command.execute(message, bot)
+    except Exception as e:
+        bot.send_message(message.chat.id, e.__str__())
 
 
 print('Started!')
