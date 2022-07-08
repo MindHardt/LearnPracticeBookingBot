@@ -1,20 +1,15 @@
 import datetime
 from abc import abstractmethod
-from datetime import date
-from functools import total_ordering
 import time
 from urllib.parse import urlencode
 from bs4 import BeautifulSoup
 import requests
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from datetime import date
 import re
 from multiprocessing.dummy import Pool
-#from tqdm import tqdm
-from tqdm.contrib.telegram import tqdm, trange
-import json
+from tqdm.contrib.telegram import tqdm
 
 #https://hotel.tutu.ru/
 #20 records_per_page
@@ -28,9 +23,8 @@ class Parser:
     headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9'}
 
     @abstractmethod
-    def parse(self, dest: str, checkin: str, checkout: str, hotels_quantity: int, chat_id, token):
+    def parse(self, destination: str, checkin: str, checkout: str, hotels_quantity: int, chat_id, token):
         pass
-
     
 
 class BookingParser(Parser): 
@@ -236,7 +230,7 @@ class YandexParser(Parser):
             driver.maximize_window()
             time.sleep(2)
 
-            soup = BeautifulSoup(driver.page_source, 'html.parser')
+            soup = BeautifulSoup(driver.page_source, "html.parser")
             driver.quit()
 
             for item in soup.find_all('div', 'ATR04'): #going through hotel records
@@ -255,7 +249,7 @@ class YandexParser(Parser):
 
     #извлекает данные об отеле по ссылке
     def __get_hotel_data(self, url):
-            hotel_soup = BeautifulSoup(requests.get(url,headers=self.headers).content, 'html.parser')
+            hotel_soup = BeautifulSoup(requests.get(url, headers=self.headers).content, "html.parser")
             #name //*[@id="hp_hotel_name"]/text() 
             try:
                 name = hotel_soup.find('div', '_SN_o').get_text()
@@ -269,7 +263,7 @@ class YandexParser(Parser):
                 rate = 'Unknown'
             #stars
             try:
-                stars = (round(float(hotel_soup.find('div', 'FlrxR _DRHd kWZoP').get_text().replace(',','.')))).__str__()
+                stars = (round(float(hotel_soup.find('div', 'FlrxR _DRHd kWZoP').get_text().replace(',', '.')))).__str__()
             except AttributeError:
                 stars = ''
             #address
@@ -316,15 +310,10 @@ class YandexParser(Parser):
                 'tags': tags
             }
             return hotel_data
-                
-    def __str_to_date(self, str_date: str, separator = '.'):
-            args = str_date.split(separator)
-            return date(int(args[2]), int(args[1]), int(args[0]))
 
-    def parse(self, dest: str, checkin: str, checkout: str, hotels_quantity: int, chat_id, token):
-        checkin_d = self.__str_to_date(checkin)
-        checkout_d = self.__str_to_date(checkout)
-        hotel_search_url = self.__generate_url(dest, checkin_d, checkout_d)
+
+    def parse(self, dest: str, checkin: date, checkout: date, hotels_quantity: int, chat_id, token):
+        hotel_search_url = self.__generate_url(dest, checkin, checkout)
         hotel_urls = self.__get_hotel_urls(hotel_search_url, hotels_quantity)
 
         pool = Pool(processes=4)
