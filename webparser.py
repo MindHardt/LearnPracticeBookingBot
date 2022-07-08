@@ -66,7 +66,7 @@ class BookingParser(Parser):
             #изменяю url на другую страницу
             url_to_parse = re.sub('offset=\d+', 'offset=' + i.__str__(), url_to_parse)
             #soup страницы с отелями
-            soup = BeautifulSoup(requests.get(url_to_parse,headers=self.headers).content, 'html.controller')
+            soup = BeautifulSoup(requests.get(url_to_parse,headers=self.headers).content, 'html.parser')
 
             for item in soup.find_all('div', 'd20f4628d0'): #going through hotel records/переход по блокам отелей
                 #extract url
@@ -84,7 +84,7 @@ class BookingParser(Parser):
 
     #извлекает данные об отеле по ссылке
     def __get_hotel_data(self, url):   #booking
-        hotel_soup = BeautifulSoup(requests.get(url,headers=self.headers).content, 'html.controller')
+        hotel_soup = BeautifulSoup(requests.get(url,headers=self.headers).content, 'html.parser')
         #name //*[@id="hp_hotel_name"]/text() 
         try:
             name = hotel_soup.find('h2', id='hp_hotel_name').get_text().replace('\n', '').removeprefix('Отель')
@@ -332,3 +332,5 @@ class YandexParser(Parser):
         all_data = []
         for result in tqdm(pool.imap(func=self.__get_hotel_data, iterable=hotel_urls), token=f'{token}', chat_id=f'{chat_id}', total=len(hotel_urls), unit='hotel'):
             all_data.append(result)
+
+        return all_data

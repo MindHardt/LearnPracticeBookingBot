@@ -29,5 +29,5 @@ def initiate_parse() -> []:
     response = ''
     for s in hotels_data:
         response += f"{s['name']} {s['rate']}\n"
-        bot.send_message(chat_id, response)
+    bot.send_message(chat_id, response)
     return None
