@@ -3,4 +3,4 @@ class EntityUser:
     name = str  # VARCHAR(36)
     balance = 0  # INTEGER
     login = str  # VARCHAR(36), UNIQUE
-    password_hash = int  # INTEGER
+    password_hash = str  # TEXT

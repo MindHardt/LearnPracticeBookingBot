@@ -1,3 +1,4 @@
+import datetime
 from abc import abstractmethod
 from datetime import date
 from functools import total_ordering
@@ -135,14 +136,9 @@ class BookingParser(Parser):
         }
         return hotel_data
 
-    def __str_to_date(self, str_date: str, separator='.'):
-        args = str_date.split(separator)
-        return date(int(args[2]), int(args[1]), int(args[0]))
+    def parse(self, destination: str, checkin: datetime.datetime, checkout: datetime.datetime, hotels_quantity: int, chat_id, token):
 
-    def parse(self, dest: str, checkin: str, checkout: str, hotels_quantity: int, chat_id, token):
-        checkin_d = self.__str_to_date(checkin)
-        checkout_d = self.__str_to_date(checkout)
-        hotel_search_url = self.__generate_url(dest, checkin_d, checkout_d)
+        hotel_search_url = self.__generate_url(destination, checkin, checkout)
         hotel_urls = self.__get_hotel_urls(hotel_search_url, hotels_quantity)
 
         pool = Pool(processes=4)
@@ -152,6 +148,7 @@ class BookingParser(Parser):
             all_data.append(result)
 
         return all_data
+
 
 class YandexParser(Parser):
     base_url = 'https://travel.yandex.ru/hotels/'

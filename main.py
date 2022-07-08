@@ -1,6 +1,7 @@
 import telebot
 
-from commands import map_pointer_command, hotel_search_command, redeem_promocode_command, create_promocode_command
+from commands import map_pointer_command, hotel_search_command, redeem_promocode_command, create_promocode_command, \
+    register_command, login_command
 
 with open('token.txt') as file:
     token = file.readline()
@@ -30,6 +31,11 @@ def message_non_command_handle(message):
             redeem_promocode_command.execute(message, bot)
         elif call == "Создать промокод":
             create_promocode_command.execute(message, bot)
+        elif call == "Зарегистрироваться":
+            register_command.execute(message, bot)
+        elif call == "Войти":
+            login_command.execute(message, bot)
+
     except Exception as e:
         bot.send_message(message.chat.id, e.__str__())
 

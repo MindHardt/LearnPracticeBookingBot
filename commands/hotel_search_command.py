@@ -7,11 +7,12 @@ from controller import authentificator, parser_controller
 
 
 def execute(message, bot):
+    user = authentificator.get_user(message.chat.id)
     bot.send_message(message.chat.id, 'Введите город, дату въезда и выезда через пробел (dd.mm.yyyy):')
-    bot.register_next_step_handler(message, lambda m: handle_hotel_search(m, bot))
+    bot.register_next_step_handler(message, lambda m: handle_hotel_search(m, bot, user))
 
 
-def handle_hotel_search(message, bot):
+def handle_hotel_search(message, bot, user):
     try:
         args = message.text.split(' ')
         city = args[0]
@@ -24,7 +25,7 @@ def handle_hotel_search(message, bot):
         request = EntityRequest()
         request.unique_id = uuid.uuid4()
         request.date_request = datetime.datetime.now()
-        request.user_id = authentificator.get_user(message.chat.id)
+        request.user_id = user
         request.date_arrive = checkin
         request.date_depart = checkout
         request.destination = city
@@ -33,6 +34,6 @@ def handle_hotel_search(message, bot):
 
         parser_controller.queue_parse(request, bot, message.chat.id)
     except Exception as e:
-        bot.send_message(message.chat.id, f'Произошла ошибка: {e.__str__()}')
+        bot.send_message(message.chat.id, f'Произошла ошибка: {e}')
 
     
