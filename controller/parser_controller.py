@@ -1,4 +1,5 @@
 from queue import Queue
+import webparser
 
 __queue = Queue(-1)
 
@@ -22,4 +23,19 @@ def initiate_parse() -> []:
     print(f'Initiated parse of {message.text} to parse queue')
     bot.send_message(chat_id, 'Начинаю поиск')
     # ЗДЕСЬ НАЧИНАЕМ ПАРСИНГ ПО РЕКВЕСТУ
+    booking_parser = webparser.BookingParser()
+    hotels_data = booking_parser.parse
+    (
+        message.destination, 
+        message.date_arrive, 
+        message.date_depart, 
+        10, 
+        chat_id, 
+        bot.token
+    )
+    #
+    response = ''
+    for s in hotels_data:
+        response += f"{s['name']} {s['rate']}\n"
+        bot.send_message(chat_id, response)
     return None
