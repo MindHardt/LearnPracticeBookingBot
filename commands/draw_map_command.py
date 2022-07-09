@@ -33,12 +33,16 @@ def handle_coordinates(message, bot):
         # bot.send_message(message.chat.id, response, reply_markup=markup)
         try:
             img = create_map(coordinates)
-            bot.send_chat_action(message.chat.id, 'upload_photo')
-            bot.send_photo(message.chat.id, img, reply_to_message_id=message.id)
+            send_map(bot, message.chat.id, img)
         except Exception as e:
             bot.send_message(message.chat.id, f"Произошла ошибка при отправке карты: `{e}`")
     except Exception as e:
         bot.send_message(message.chat.id, f"Произошла ошибка: `{e}`")
+
+
+def send_map(bot, chat_id, map_image: Image):
+    bot.send_chat_action(chat_id, 'upload_photo')
+    bot.send_photo(chat_id, map_image)
 
 
 def create_map(coordinates_list: list) -> Image:

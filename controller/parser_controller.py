@@ -2,9 +2,10 @@ from queue import Queue
 from telebot import types
 
 import webparser
-from utilities import markup_generator
+from controller.paginated_messages_controller import create_hotel_view
 
 __queue = Queue(-1)
+
 
 def queue_parse(request, bot, chat_id):
     if __queue.empty():
@@ -36,34 +37,11 @@ def initiate_parse():
     # hotels_data.append(hotel2)
     # hotels_data.append(hotel3)
 
-    parsed_results[chat_id] = (hotels_data, 2)
+    create_hotel_view(chat_id, hotels_data, bot)
     # response = ''
     # for s in hotels_data:
     #     response += f"{s['name']} {s['rate']}\n"
     # bot.send_message(chat_id, response)
-    response = update_paginated_message(chat_id, 'b')
-    paginator = markup_generator.get_pagination_markup()
-
-    bot.send_message(chat_id, response, reply_markup=paginator)
 
 
-def update_paginated_message(chat_id: int, direction: str) -> str:
-    data = parsed_results[chat_id]
-    hotels = data[0]
-    page = data[1]
-    if direction == 'f':
-        if page >= len(hotels):
-            return ''
-        page += 1
-    else:
-        if data[1] <= 1:
-            return ''
-        page -= 1
-    hotel = hotels[page - 1]
-    response = f"Отель № {page}/{len(hotels)}\n{format_hotel(hotel)}"
-    parsed_results[chat_id] = (hotels, page)
-    return response
 
-
-def format_hotel(data) -> str:
-    return f"{data['name']}\n{data['rate']}"
