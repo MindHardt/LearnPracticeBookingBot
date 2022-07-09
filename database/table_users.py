@@ -46,3 +46,8 @@ def __create_table__():
     connection.commit()
     cursor.close()
     print('Created table EntityUser')
+
+
+def update_balance(user: EntityUser):
+    """Updates user's balance"""
+    pass

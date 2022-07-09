@@ -1,5 +1,4 @@
-import promocodes
-from controller import authentificator
+from controller import authentificator, promocodes_controller
 from database.entity_user import EntityUser
 
 
@@ -10,7 +9,7 @@ def execute(message, bot):
 
 
 def handle_promocode(message, bot, user: EntityUser):
-    value = promocodes.redeem_promocode(user, message.text)
+    value = promocodes_controller.redeem_promocode(user, message.text)
     if value != 0:
         bot.send_message(message.chat.id, f'Начислил вам {value}¢')
     else:

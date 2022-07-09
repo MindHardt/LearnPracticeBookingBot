@@ -1,5 +1,4 @@
-import promocodes
-from controller import authentificator
+from controller import authentificator, promocodes_controller
 from database import table_admins
 
 
@@ -16,7 +15,7 @@ def handle_promocode_value(message, bot):
         value = message.text
         value = int(value)
 
-        code = promocodes.create_promocode(value)
+        code = promocodes_controller.create_promocode(value)
         bot.send_message(message.chat.id, f'Ваш промокод: `{code}`')
     except Exception as e:
         bot.send_message(message.chat.id, f'Произошла ошибка: {e}')
