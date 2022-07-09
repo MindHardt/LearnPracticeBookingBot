@@ -12,9 +12,11 @@ def execute(message, bot):
 
 
 def handle_promocode_value(message, bot):
-    value = message.text
-    if value is not int:
-        raise Exception('Некорректный ввод')
+    try:
+        value = message.text
+        value = int(value)
 
-    code = promocodes.create_promocode(value)
-    bot.send_message(message.chat.id, f'Ваш промокод: `{code}`')
+        code = promocodes.create_promocode(value)
+        bot.send_message(message.chat.id, f'Ваш промокод: `{code}`')
+    except Exception as e:
+        bot.send_message(message.chat.id, f'Произошла ошибка: {e}')

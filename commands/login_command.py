@@ -1,9 +1,6 @@
 import hashlib
-import uuid
-
 from controller import authentificator
 from database import table_users
-from database.entity_user import EntityUser
 
 
 def execute(message, bot):

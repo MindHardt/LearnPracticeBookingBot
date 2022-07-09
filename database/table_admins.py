@@ -1,26 +1,37 @@
 import sqlite3
-connection = sqlite3.connect('h.db')
-cursor = connection.cursor()
 
 
 def add_admin(user_id: str):
-    cursor.execute("insert into admins(id_admin) values(?)", user_id)
-    connection.commit()    
+    connection = sqlite3.connect('h.db')
+    cursor = connection.cursor()
+    cursor.execute("insert into admins(id_admin) values(?)", (user_id,))
+    connection.commit()
+    cursor.close()
     return
 
 
 def revoke_admin(user_id: str):
-    cursor.execute(f"delete from admins where id_admin = {user_id}")
-    connection.commit() 
+    connection = sqlite3.connect('h.db')
+    cursor = connection.cursor()
+    cursor.execute(f"delete from Admins where id_admin = ?", (user_id,))
+    connection.commit()
+    cursor.close()
     return
 
 
 def is_admin(user_id: str) -> bool:
-    admin_id = [x[0] for x in cursor.execute(f"select id_admin from admins where id_admin = {user_id}").fetchall()]
-    return len(admin_id) > 0
+    __create_table__()
+    connection = sqlite3.connect('h.db')
+    cursor = connection.cursor()
+    admin_id = cursor.execute(f"select id_admin from Admins where id_admin = ?", (user_id,)).fetchone()
+    cursor.close()
+    return admin_id is not None
 
 
-def create_table():
-    cursor.execute("CREATE TABLE IF NOT EXISTS admins(id_admin VARCHAR(36))")
-    connection.commit() 
+def __create_table__():
+    connection = sqlite3.connect('h.db')
+    cursor = connection.cursor()
+    cursor.execute("CREATE TABLE IF NOT EXISTS Admins(id_admin TEXT UNIQUE)")
+    connection.commit()
+    cursor.close()
     return
