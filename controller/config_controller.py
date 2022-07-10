@@ -14,6 +14,7 @@ def set_value(config, value):
     current_value = __config.pop(config, None)
     if current_value is not None:
         __config[config] = value
+    save_json()
     return current_value
 
 
@@ -23,7 +24,7 @@ def get_value(config):
 
 
 def save_json():
-    with open('config.json') as f:
+    with open('config.json', 'w') as f:
         json.dump(__config, f)
 
 

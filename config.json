@@ -1,4 +1,1 @@
-{
-	"max_hotels": 10,
-	"default_balance": 50
-}
+{"default_balance": "60", "max_hotels": "15"}
