@@ -26,12 +26,20 @@ def initiate_parse():
     print(f'Initiated parse of {request.destination} to parse queue')
     bot.send_message(chat_id, 'Начинаю поиск')
 
-    booking_parser = webparser.BookingParser()
-
     max_hotels = config_controller.get_value('max_hotels')
     if max_hotels is None:
         raise Exception('max_hotels is None')
-    hotels_data = booking_parser.parse(request.destination, request.date_arrive, request.date_depart, int(max_hotels), chat_id, bot.token)
+        
+    parsers = [BookingParser(), YandexParser()]
+    total_h = int(max_hotels)
+    hotels_data = []
+    no_parsers = len(parsers)
+    for i in range(no_parsers):
+        if i == (no_parsers - 1):
+            no_hotels_per_parser = total_h - i * round(total_h / no_parsers)
+        else:
+            no_hotels_per_parser = (i + 1) * round(total_h / no_parsers)
+        hotels_data += parsers[i].parse(destination, date_arrive, date_depart, no_hotels_per_parser, chat_id, bot.token)
     # hotels_data = []
     # hotel1 = {"name": "name1", "rate": 5}
     # hotel2 = {"name": "name2", "rate": 4}
