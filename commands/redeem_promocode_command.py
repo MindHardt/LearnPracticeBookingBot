@@ -1,5 +1,7 @@
+import telebot.formatting
+
 from controller import authentificator, promocodes_controller
-from database.entity_user import EntityUser
+from database.table_users import EntityUser
 
 
 def execute(message, bot):
@@ -9,8 +11,12 @@ def execute(message, bot):
 
 
 def handle_promocode(message, bot, user: EntityUser):
-    value = promocodes_controller.redeem_promocode(user, message.text)
-    if value != 0:
-        bot.send_message(message.chat.id, f'Начислил вам {value}¢')
-    else:
-        bot.send_message(message.chat.id, 'Теперь вы администратор.')
+    try:
+        value = promocodes_controller.redeem_promocode(user, message.text)
+        if value != 0:
+            bot.send_message(message.chat.id, f'Начислил вам {value}¢')
+        else:
+            bot.send_message(message.chat.id, 'Теперь вы администратор.')
+    except Exception as e:
+        errmsg = telebot.formatting.mcode(e.__str__())
+        bot.send_message(message.chat.id, f'Произошла ошибка: {errmsg}')

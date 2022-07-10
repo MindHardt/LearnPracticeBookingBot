@@ -15,6 +15,7 @@ from tqdm.contrib.telegram import tqdm
 #20 records_per_page
 #lenta
 
+
 class Parser:
     base_url: str
     max_records: int

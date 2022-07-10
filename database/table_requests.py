@@ -1,7 +1,7 @@
 import datetime
 import sqlite3
 from database.entity_request import EntityRequest
-from database.entity_user import EntityUser
+from database.table_users import EntityUser
 
 connection = sqlite3.connect('h.db')
 cursor = connection.cursor()

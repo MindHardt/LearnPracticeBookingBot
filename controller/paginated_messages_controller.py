@@ -8,11 +8,24 @@ __paginated_messages = dict()
 
 def create_hotel_view(chat_id, hotels: list, bot):
 
-    __paginated_messages[chat_id] = (hotels, 2)
+    __paginated_messages[chat_id] = (hotels, 2, set())
+    # all the hotels, current page, current filters
     response = update_page(chat_id, 'b')
     paginator = get_pagination_markup()
 
+    tags = set()
+    for hotel in hotels:
+        for tag in hotel['tags']:
+            tags.add(tag)
+
+    tags_ordered = sorted(list(tags))
+
+    tags_str = str()
+    for tag in tags_ordered:
+        tags_str += tag + '\n'
+
     bot.send_message(chat_id, response, reply_markup=paginator)
+    bot.send_message(chat_id, tags_str)
 
 
 def handle_pagination_callback(call, bot):
@@ -60,7 +73,12 @@ def update_page(chat_id: int, direction: str) -> str:
 
 
 def format_hotel(data) -> str:
-    return f"{data['name']}\n{data['rate']}"
+    tags = sorted(list(set(data['tags'])))
+    tag_list = str()
+
+    for tag in tags:
+        tag_list += f'{tag}\n'
+    return f"{data['name']}\n{data['rate']}\n\nТеги:\n{tag_list}"
 
 
 def get_pagination_markup() -> telebot.types.InlineKeyboardMarkup:
@@ -71,3 +89,9 @@ def get_pagination_markup() -> telebot.types.InlineKeyboardMarkup:
     paginator.add(backward_button, forward_button, map_button)
 
     return paginator
+
+
+def get_filter_button(filter_text: str, is_disable_button: bool):
+    sign = '-' if is_disable_button else '+'
+    keyword = 'disable' if is_disable_button else 'enable'
+    return types.InlineKeyboardButton(f'{sign} {filter_text}', callback_data=f'filter_{keyword}_{filter_text}')

@@ -1,9 +1,9 @@
-from database.entity_user import EntityUser
+from database.table_users import EntityUser
 
 logged_in = dict()
 
 
-def login(user: EntityUser, chat_id):
+def auth(user: EntityUser, chat_id):
     logged_in[chat_id] = user
 
 
@@ -13,8 +13,5 @@ def logout(chat_id) -> EntityUser:
 
 
 def get_user(chat_id) -> EntityUser():
-    """Gets user connected to this chat_id. Throws KeyError is none is found"""
-    user = logged_in.get(chat_id)
-    if user is None:
-        raise KeyError('Пользователь не авторизован!')
-    return user
+    """Gets user connected to this chat_id or returns None if there is none"""
+    return logged_in.get(chat_id, None)

@@ -4,6 +4,8 @@ from database import table_admins
 
 def execute(message, bot):
     user = authentificator.get_user(message.chat.id)
+    if user is None:
+        raise Exception('Вы не авторизованы!')
     if not table_admins.is_admin(user.unique_id):
         raise Exception('У вас нет прав')
     bot.send_message(message.chat.id, 'Введите число в валюте, либо 0 для админ-промокода')

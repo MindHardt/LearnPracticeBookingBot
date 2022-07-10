@@ -1,14 +1,18 @@
+import telebot.formatting
+
 from controller import authentificator
-from database import table_users
 
 
 def execute(message, bot):
     user = authentificator.get_user(message.chat.id)
     if user is None:
-        bot.send_message(message.chat.id, 'Введите логин и пароль каждый с новой строки.')
-        bot.register_next_step_handler(message, lambda m: handle_login_input(m, bot))
+        bot.send_message(message.chat.id, 'Вы не авторизованы!')
     else:
-        bot.send_message(message.chat.id, 'Вы уже авторизованы!')
+        infotab = str()
+        infotab += f'Ваш айди: {user.unique_id}\n'
+        infotab += f'Ваше имя: {user.name}\n'
+        infotab += f'Ваш баланс: {user.balance}\n'
+        bot.send_message(message.chat.id, infotab)
 
 
 def handle_login_input(message, bot):

@@ -1,6 +1,6 @@
 import datetime
 
-from database.entity_user import EntityUser
+from database.table_users import EntityUser
 
 
 class EntityRequest:

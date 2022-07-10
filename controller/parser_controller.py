@@ -2,6 +2,7 @@ from queue import Queue
 from telebot import types
 
 import webparser
+from controller import config_controller
 from controller.paginated_messages_controller import create_hotel_view
 
 __queue = Queue(-1)
@@ -28,7 +29,8 @@ def initiate_parse():
 
     booking_parser = webparser.BookingParser()
 
-    hotels_data = booking_parser.parse(request.destination, request.date_arrive, request.date_depart, 10, chat_id, bot.token)
+    max_hotels = config_controller.get_value('max_hotels')
+    hotels_data = booking_parser.parse(request.destination, request.date_arrive, request.date_depart, max_hotels, chat_id, bot.token)
     # hotels_data = []
     # hotel1 = {"name": "name1", "rate": 5}
     # hotel2 = {"name": "name2", "rate": 4}
@@ -38,6 +40,8 @@ def initiate_parse():
     # hotels_data.append(hotel3)
 
     create_hotel_view(chat_id, hotels_data, bot)
+    if not __queue.empty():
+        initiate_parse()
     # response = ''
     # for s in hotels_data:
     #     response += f"{s['name']} {s['rate']}\n"

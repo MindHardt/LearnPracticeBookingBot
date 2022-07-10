@@ -8,13 +8,13 @@ from controller import authentificator, parser_controller
 
 def execute(message, bot):
     user = authentificator.get_user(message.chat.id)
-    bot.send_message(message.chat.id, 'Введите город, дату въезда и выезда через пробел (dd.mm.yyyy):')
+    bot.send_message(message.chat.id, 'Введите город, дату въезда и выезда, каждое с новой строки (dd.mm.yyyy):')
     bot.register_next_step_handler(message, lambda m: handle_hotel_search(m, bot, user))
 
 
 def handle_hotel_search(message, bot, user):
     try:
-        args = message.text.split(' ')
+        args = message.text.split('\n')
         city = args[0]
         checkin = datetime.datetime.strptime(args[1], '%d.%m.%Y').date()
         checkout = datetime.datetime.strptime(args[2], '%d.%m.%Y').date()
