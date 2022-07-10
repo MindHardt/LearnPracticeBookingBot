@@ -30,7 +30,9 @@ def initiate_parse():
     booking_parser = webparser.BookingParser()
 
     max_hotels = config_controller.get_value('max_hotels')
-    hotels_data = booking_parser.parse(request.destination, request.date_arrive, request.date_depart, max_hotels, chat_id, bot.token)
+    if max_hotels is None:
+        raise Exception('max_hotels is None')
+    hotels_data = booking_parser.parse(request.destination, request.date_arrive, request.date_depart, int(max_hotels), chat_id, bot.token)
     # hotels_data = []
     # hotel1 = {"name": "name1", "rate": 5}
     # hotel2 = {"name": "name2", "rate": 4}
