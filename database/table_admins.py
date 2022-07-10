@@ -31,7 +31,9 @@ def is_admin(user_id: str) -> bool:
 def __create_table__():
     connection = sqlite3.connect('h.db')
     cursor = connection.cursor()
-    cursor.execute("CREATE TABLE IF NOT EXISTS Admins(id_admin TEXT UNIQUE)")
+    cursor.execute("""CREATE TABLE IF NOT EXISTS Admins(
+    id_admin VARCHAR(36) UNIQUE,
+    FOREIGN KEY (id_admin) REFERENCES EntityUser(unique_id))""")
     connection.commit()
     cursor.close()
     return

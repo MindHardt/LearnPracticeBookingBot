@@ -1,3 +1,5 @@
+import telebot.types
+
 from commands import draw_map_command, hotel_search_command, redeem_promocode_command, create_promocode_command, \
     register_command, login_command, logout_command, info_command, set_config_command, view_config_command
 from controller import authentificator
@@ -13,8 +15,6 @@ def handle_command(message, bot):
             hotel_search_command.execute(message, bot)
         elif call == "Использовать промокод":
             redeem_promocode_command.execute(message, bot)
-        elif call == "Создать промокод":
-            create_promocode_command.execute(message, bot)
         elif call == "Зарегистрироваться":
             register_command.execute(message, bot)
         elif call == "Войти":
@@ -28,8 +28,21 @@ def handle_command(message, bot):
             set_config_command.execute(message, bot)
         elif call == "=viewconfig":
             view_config_command.execute(message, bot)
-        elif call == "=iownyou":  # REMOVE
-            user = authentificator.get_user(message.chat.id)
-            table_admins.add_admin(user.unique_id)
+        elif call == "=create_promocode":
+            create_promocode_command.execute(message, bot)
+
     except Exception as e:
         bot.send_message(message.chat.id, e.__str__())
+
+
+def get_keyboard() -> telebot.types.ReplyKeyboardMarkup:
+    markup = telebot.types.ReplyKeyboardMarkup()
+    markup.add(telebot.types.KeyboardButton('Точка на карте'))
+    markup.add(telebot.types.KeyboardButton('Найти отель'))
+    markup.add(telebot.types.KeyboardButton('Использовать промокод'))
+    markup.add(telebot.types.KeyboardButton('Зарегистрироваться'))
+    markup.add(telebot.types.KeyboardButton('Войти'))
+    markup.add(telebot.types.KeyboardButton('Выйти'))
+    markup.add(telebot.types.KeyboardButton('Инфо'))
+
+    return markup

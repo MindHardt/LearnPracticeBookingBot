@@ -30,9 +30,9 @@ def handle_hotel_search(message, bot, user):
             raise TypeError('Неверные даты!')
 
         request = EntityRequest()
-        request.unique_id = uuid.uuid4()
+        request.unique_id = uuid.uuid4().__str__()
         request.date_request = datetime.datetime.now()
-        request.user_id = user
+        request.user_id = user.unique_id
         request.date_arrive = checkin
         request.date_depart = checkout
         request.destination = city

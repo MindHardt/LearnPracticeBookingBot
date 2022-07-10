@@ -30,7 +30,7 @@ def initiate_parse():
     if max_hotels is None:
         raise Exception('max_hotels is None')
         
-    parsers = [BookingParser(), YandexParser()]
+    parsers = [webparser.BookingParser(), webparser.YandexParser()]
     total_h = int(max_hotels)
     hotels_data = []
     no_parsers = len(parsers)
@@ -39,7 +39,7 @@ def initiate_parse():
             no_hotels_per_parser = total_h - i * round(total_h / no_parsers)
         else:
             no_hotels_per_parser = (i + 1) * round(total_h / no_parsers)
-        hotels_data += parsers[i].parse(destination, date_arrive, date_depart, no_hotels_per_parser, chat_id, bot.token)
+        hotels_data += parsers[i].parse(request.destination, request.date_arrive, request.date_depart, no_hotels_per_parser, chat_id, bot.token)
     # hotels_data = []
     # hotel1 = {"name": "name1", "rate": 5}
     # hotel2 = {"name": "name2", "rate": 4}

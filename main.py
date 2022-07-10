@@ -14,7 +14,7 @@ def start_message(message):
 
 @bot.message_handler(commands=['menu'])
 def menu_message(message):
-    pass
+    bot.send_message(message.chat.id, 'Меню перед вами:', reply_markup=commands_controller.get_keyboard())
 
 
 @bot.message_handler(content_types='text')
