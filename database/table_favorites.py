@@ -22,13 +22,15 @@ def __create_tables__():
     cursor.execute("PRAGMA foreign_keys=on")
     cursor.execute("""CREATE TABLE IF NOT EXISTS Favorites(
     unique_id VARCHAR(36) PRIMARY KEY,
-    FOREIGN KEY (user_id) REFERENCES EntityUser(unique_id),
-    url TEXT
+    user_id VARCHAR(36),
+    url TEXT,
+    FOREIGN KEY (user_id) REFERENCES EntityUser(unique_id)
     )""")
     cursor.execute("""CREATE TABLE IF NOT EXISTS FavoriteData(
-    FOREIGN KEY (favorite_id) REFERENCES Favorites(unique_id),
+    favorite_id VARCHAR(36),
     price INTEGER,
-    time DATETIME
+    time DATETIME,
+    FOREIGN KEY (favorite_id) REFERENCES Favorites(unique_id)
     )""")
     connection.commit()
     cursor.close()

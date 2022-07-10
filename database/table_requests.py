@@ -58,6 +58,7 @@ def __create_table__():
                    "date_arrive DATETIME, "
                    "date_depart DATETIME, "
                    "date_request DATETIME,"
+                   "user_id VARCHAR(36)"
                    "FOREIGN KEY (user_id) REFERENCES EntityUser(unique_id))")
     connection.commit()
     cursor.close()
