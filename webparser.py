@@ -10,6 +10,7 @@ from datetime import date
 import re
 from multiprocessing.dummy import Pool
 from tqdm.contrib.telegram import tqdm
+from lxml import etree
 
 #https://hotel.tutu.ru/
 #20 records_per_page
@@ -88,7 +89,8 @@ class BookingParser(Parser):
         #url is url
         #rate
         try:
-            rate = hotel_soup.find('span', 'prco-valign-middle-helper').get_text().replace('\n', '')
+            rate = hotel_soup.find('span', 'prco-valign-middle-helper').get_text().replace('\n', '').replace(' ','')
+            rate = re.search('\\d+', rate).group()
         except AttributeError:
             rate = 'Unknown'
         #stars
@@ -111,11 +113,11 @@ class BookingParser(Parser):
         longitude = float(coords[1])
         try:
             soup_tags = hotel_soup.find_all('div', 'important_facility')
-        
-        #tags
+            #tags
             tags = []
             for tag in soup_tags:
                 tags.append(tag.get_text().replace('\n', ''))
+            tags = list(set(tags))
         except AttributeError:
             tags = ['Unknown']
 
@@ -250,16 +252,28 @@ class YandexParser(Parser):
 
     #извлекает данные об отеле по ссылке
     def __get_hotel_data(self, url):
-            hotel_soup = BeautifulSoup(requests.get(url, headers=self.headers).content, "html.parser")
+            option = webdriver.ChromeOptions()
+            option.add_argument('headless')
+            driver = webdriver.Chrome(options=option)
+            driver.get(url)
+            time.sleep(1)
+            hotel_soup = BeautifulSoup(driver.page_source, "html.parser")
+            driver.quit()
+
+            tree = etree.HTML(hotel_soup.__str__())
             #name //*[@id="hp_hotel_name"]/text() 
             try:
                 name = hotel_soup.find('div', '_SN_o').get_text()
+                name = re.sub(r'((?:[^A-Za-zА-Яа-я\s]|\s)+)', lambda x: ' ' if ' ' in x.group(0) else '' , name)
             except AttributeError:
                 name = 'Noname'
             #url is url
             #rate
             try:
-                rate = hotel_soup.find('span', 'Akpkj vE8yn').get_text()
+                #rate = hotel_soup.find('span', 'Akpkj vE8yn').get_text()
+                rate = tree.xpath("//span[@class='Akpkj vE8yn']/text()")[0]
+                arr = re.findall('\d+', rate)
+                rate = ''.join(arr)
             except AttributeError:
                 rate = 'Unknown'
             #stars
@@ -297,6 +311,7 @@ class YandexParser(Parser):
                 
                 for tag in hotel_soup.find_all('li', 'cKijb'):
                     tags.append(tag.get_text().replace('\n', ''))
+                tags = list(set(tags))
             except AttributeError:
                 tags = ['Unknown']
 
@@ -311,7 +326,6 @@ class YandexParser(Parser):
                 'tags': tags
             }
             return hotel_data
-
 
     def parse(self, dest: str, checkin: date, checkout: date, hotels_quantity: int, chat_id, token):
         hotel_search_url = self.__generate_url(dest, checkin, checkout)
