@@ -2,8 +2,8 @@ import datetime
 import uuid
 
 from database import table_requests
-from database.entity_request import EntityRequest
 from controller import authentificator, parser_controller
+from database.table_requests import EntityRequest
 
 
 def execute(message, bot):

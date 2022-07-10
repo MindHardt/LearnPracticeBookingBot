@@ -13,19 +13,7 @@ def create_hotel_view(chat_id, hotels: list, bot):
     response = update_page(chat_id, 'b')
     paginator = get_pagination_markup()
 
-    tags = set()
-    for hotel in hotels:
-        for tag in hotel['tags']:
-            tags.add(tag)
-
-    tags_ordered = sorted(list(tags))
-
-    tags_str = str()
-    for tag in tags_ordered:
-        tags_str += tag + '\n'
-
     bot.send_message(chat_id, response, reply_markup=paginator)
-    bot.send_message(chat_id, tags_str)
 
 
 def handle_pagination_callback(call, bot):

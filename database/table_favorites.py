@@ -1,14 +1,16 @@
 
 
-class favorite:
+class Favorite:
     """Отель, добавленный в избранное"""
     unique_id = str()
     user_id = str()
     url = str()
 
 
-class favorite_data:
+class FavoriteData:
     """Данные об избранном за 1 запрос"""
     favorite_id = str()
     price = int()
+
+
 

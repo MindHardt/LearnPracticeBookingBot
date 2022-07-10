@@ -1,5 +1,4 @@
 from queue import Queue
-from telebot import types
 
 import webparser
 from controller import config_controller
