@@ -24,16 +24,21 @@ class EntityRequest:
         cursor.close()
 
 
-def get_history_of(user: EntityUser) -> list:
+def get_history_of(user: EntityUser) -> str:
     """Gets all the history of specified user"""
     __create_table__()
     connection = sqlite3.connect('h.db')
     cursor = connection.cursor()
-    found = cursor.execute("""
-            SELECT * FROM EntityRequest WHERE user_id = ?
-            """, (user.unique_id,)).fetchall()
+    cursor.execute("""
+            SELECT date_request, destination, date_arrive, date_depart FROM EntityRequest WHERE user_id = ?
+            """, (user.unique_id,))
+    found = cursor.fetchall()
     cursor.close()
-    return found
+
+    result = str()
+    for row in found:
+        result += f'{row}\n'
+    return result
 
 
 def get_history_for(date_from: datetime.datetime, date_to: datetime.datetime) -> list:

@@ -1,5 +1,1 @@
-{
-  "default_balance": "60",
-  "hotel_search_price": "15",
-  "max_hotels": "100"
-}
+{"default_balance": "60", "hotel_search_price": "15", "hotel_track_price": "50", "max_hotels": "5"}

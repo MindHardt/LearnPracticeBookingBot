@@ -42,5 +42,6 @@ def handle_hotel_search(message, bot, user):
         parser_controller.queue_parse(request, bot, message.chat.id)
     except Exception as e:
         bot.send_message(message.chat.id, f'Произошла ошибка: {e}')
+        raise e
 
     

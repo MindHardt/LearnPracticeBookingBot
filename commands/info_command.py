@@ -1,6 +1,5 @@
-import telebot.formatting
-
 from controller import authentificator
+from database import table_users
 
 
 def execute(message, bot):
